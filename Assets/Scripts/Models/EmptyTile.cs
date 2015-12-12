@@ -7,7 +7,11 @@ public class EmptyTile : Tile {
 
 	}
 
-	public override void NotifyOfChange(Tile oldNeighbor, Tile newNeighbor) {
+	public override void NotifyOfChange(Tile newNeighbor) {
 		//Nothing
+	}
+
+	public override bool Exists() {
+		return false;
 	}
 }

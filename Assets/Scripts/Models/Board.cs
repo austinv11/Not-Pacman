@@ -44,7 +44,6 @@ public class Board {
 			return tiles[x, y] != null ? tiles[x, y] : (this[x, y] = new EmptyTile(new Vector2(x, y))); //Empty tile initialized on access to offload overhead
 		}
 		set {
-			Tile oldTile = tiles[x, y];
 			tiles[x, y] = value;
 
 			//Nearby tiles get notified of the change if enabled
@@ -53,7 +52,7 @@ public class Board {
 					for (int neighborY = y-1; neighborY <= y+1; neighborY++) {
 						if (neighborX == x && neighborY == y)
 							continue;
-						this[neighborX, neighborY].NotifyOfChange(oldTile, value);
+						this[neighborX, neighborY].NotifyOfChange(value);
 					}
 				}
 			}
@@ -63,25 +62,33 @@ public class Board {
 	public Board(Dimensions dimensions) {
 		this.dimensions = dimensions;
 		tiles = new Tile[dimensions.Width,dimensions.Height];
+
+		NotifyChanges = false;
+		for (int x = 0; x < dimensions.Width; x++) {
+			for (int y = 0; y < dimensions.Height; y++) {
+				tiles[x, y] = new EmptyTile(new Vector2(x, y));
+			}
+		}
+		NotifyChanges = true;
 	}
 
-	public Board() {
-		this.dimensions = new Dimensions(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+	public Board() : this(new Dimensions(DEFAULT_WIDTH, DEFAULT_HEIGHT)) {
+		
 	}
 
 	//TODO: Gets the default board from pacman
-	public static Board Default() {
-		Board board = new Board();
-		board.NotifyChanges = false; //Prevents unnecessary overhead
-		board.NotifyChanges = true;
-		return board;
+	public void Default() {
+
 	}
 
 	//TODO: Gets a randomly generated board
-	public static Board Randomized() {
-		Board board = new Board();
-		board.NotifyChanges = false; //Prevents unnecessary overhead
-		board.NotifyChanges = true;
-		return board;
+	public void Randomize() {
+		for (int x = 0; x < Dimensions.Width; x++) {
+			for (int y = 0; y < Dimensions.Height; y++) {
+				if (Random.Range(0, 2) == 1 || x == 0 || y == 0 || x >= Dimensions.Width-1 || y >= Dimensions.Height-1) {
+					this[x, y] = new Wall(new Vector2(x, y));
+				}
+			}
+		}
 	}
 }
